@@ -1,7 +1,7 @@
 import pygame,sys
 from pygame.locals import *
 
-from player_class import *
+from game_objs import *
 from config import *
 
 class Game:
@@ -13,17 +13,25 @@ class Game:
         #self.font = pygame.font.Font(None,32)
         self.running = True
 
+    def tilemap(self):
+        for y,row in enumerate(MAP_VALUES):
+            for x,col in enumerate(row):
+                if col == 1:
+                    Block(self,x,y)
+                if col==2:
+                    Player(self,x,y)
+    
     def new(self):
         #new game
         self.playing = True
 
         self.all_sprites = pygame.sprite.LayeredUpdates()
-        self.block = pygame.sprite.LayeredUpdates()
+        self.blocks = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
         self.attacks = pygame.sprite.LayeredUpdates()
 
-        self.player = Player(self,1,2)
-
+        self.tilemap()
+        
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -62,4 +70,5 @@ while g.running:
     g.game_over()
 pygame.quit()
 sys.exit()
+
 
