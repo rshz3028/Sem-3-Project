@@ -29,12 +29,11 @@ class Renderer:
     
     def __init__(self,game):
         self.game = game
-        self.map_val = self.map_value_generator(1234)
-        self.save_map_vals(self.map_val)
+##        self.map_val = self._smooth_noise(self.map_value_generator(1234))
+##        self.save_map_vals(self.map_val)
         noise_map = {}
         noise_map = self.load_map_vals("base_tile_values.json")
-        smooth_noise = self._smooth_noise(self.map_val)
-        self.world_map.update(smooth_noise)
+        self.world_map.update(noise_map)
         self.update_map()
 
     def _converter(self,a):
@@ -69,17 +68,18 @@ class Renderer:
         '''placeholder function'''
         
         self.tilemap(self.world_map)
-        self.obj_bliting(self.world_map)
+##        self.obj_bliting(self.world_map)
     
     def map_value_generator(self,seed):
         '''random map value generator using opensimplex module, returns a 2d list of floats'''
-        r = random.randint(0,1280)
+##        r = random.randint(0,1280)
+        r = seed
         print(f"seed: {r}")
         sp.seed(r)
         n = []
-        for y in range(25):
+        for y in range(250):
             o = []
-            for x in range(40):
+            for x in range(400):
                 o.append(sp.noise2(x*0.2,y*0.2))
             n.append(o)
         return n
@@ -114,7 +114,7 @@ class Renderer:
                 elif sand == max(high_ground,grass,sand,water,deep_water): l[y][x] = 0.0
                 elif water == max(high_ground,grass,sand,water,deep_water): l[y][x] = -0.2
                 elif deep_water == max(high_ground,grass,sand,water,deep_water): l[y][x] = -0.31
-        return self._converter(l)
+        return l
     
     def tilemap(self,n):
         for x,y in n:     
@@ -130,42 +130,35 @@ class Renderer:
                 Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
 
 
-    def obj_bliting(self,n):
-        d = {}
-        for x,y in n:     
-            if n[x,y] >= 0.5 :           
-                d[x,y] = 'm'
-            elif n[x,y] >=0.1 and n[x,y] <=0.5:        
-                d[x,y] = 'g'
-            elif n[x,y] >= -0.1 and n[x,y] <= 0.1:      
-                d[x,y] = 's'
-            elif n[x,y] <= -0.1 and n[x,y] >= -0.3:     
-                d[x,y] = 'w'
-            elif n[x,y] <= -0.3:     
-                d[x,y] = 'd'
-        (a,b) = random.choice(list(n.keys()))
-        d[a,b] = 'p'
-        for x,y in d:
-            if d[x,y] == 'm':           
-                pass
-            elif d[x,y] == 'g':        
-                pass
-            elif d[x,y] == 's':      
-                pass
-            elif d[x,y] == 'w':     
-                pass
-            elif d[x,y] == 'd':     
-                pass
-            elif d[x,y] == 'p':
-                Player(self.game,self.game.player_spritesheet,x,y,11,9)
-
-            
-
-                    
-                
-
-
-
+##    def obj_bliting(self,n):
+##        d = {}
+##        for x,y in n:     
+##            if n[x,y] >= 0.5 :           
+##                d[x,y] = 'm'
+##            elif n[x,y] >=0.1 and n[x,y] <=0.5:        
+##                d[x,y] = 'g'
+##            elif n[x,y] >= -0.1 and n[x,y] <= 0.1:      
+##                d[x,y] = 's'
+##            elif n[x,y] <= -0.1 and n[x,y] >= -0.3:     
+##                d[x,y] = 'w'
+##            elif n[x,y] <= -0.3:     
+##                d[x,y] = 'd'
+##        (a,b) = random.choice(list(n.keys()))
+##        d[a,b] = 'p'
+##        for x,y in d:
+##            if d[x,y] == 'm':           
+##                pass
+##            elif d[x,y] == 'g':        
+##                pass
+##            elif d[x,y] == 's':      
+##                pass
+##            elif d[x,y] == 'w':     
+##                pass
+##            elif d[x,y] == 'd':     
+##                pass
+##            elif d[x,y] == 'p':
+##                Player(self.game,self.game.player_spritesheet,x,y,11,9)
+##
 
 
 

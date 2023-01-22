@@ -21,8 +21,8 @@ class Player(pygame.sprite.Sprite):
 
         self.spritesheet = spritesheet
 
-        self.x = x*TILESIZE
-        self.y = y*TILESIZE
+        x = x*TILESIZE
+        y = y*TILESIZE
         self.width = TILESIZE
         self.height = TILESIZE
 
@@ -34,10 +34,18 @@ class Player(pygame.sprite.Sprite):
         self.image = self.spritesheet.get_sprite(sp_x,sp_y,13,19)
         
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = x
+        self.rect.y = y
 
+        self.SCROLLLEFT = False
+        self.SCROLLRIGHT = False
+        self.SCROLLUP = False
+        self.SCROLLDOWN = False
+        
+        
+        
     def update(self):
+##        self.scroll()
         self.movement()
         self.animate()
 
@@ -48,28 +56,52 @@ class Player(pygame.sprite.Sprite):
 
         self.x_change = 0
         self.y_change = 0
+        self.move_center()
 
     def movement(self):
+        keys = pygame.key.get_pressed()
         if keys[K_LEFT]:
-            for sprite in self.game.all_sprites:
-                sprite.rect.x += PLAYER_SPEED
+            if self.SCROLLLEFT:
+                for sprite in self.game.all_sprites:
+                    sprite.rect.x += PLAYER_SPEED
             self.x_change -= PLAYER_SPEED
             self.facing = 'left'
         if keys[K_RIGHT]:
-            for sprite in self.game.all_sprites:
-                sprite.rect.x -= PLAYER_SPEED
+            if self.SCROLLRIGHT:
+                for sprite in self.game.all_sprites:
+                    sprite.rect.x -= PLAYER_SPEED
             self.x_change += PLAYER_SPEED
             self.facing = 'right'
         if keys[K_UP]:
-            for sprite in self.game.all_sprites:
-                sprite.rect.y += PLAYER_SPEED
+            if self.SCROLLUP:
+                for sprite in self.game.all_sprites:
+                    sprite.rect.y += PLAYER_SPEED
             self.y_change -= PLAYER_SPEED
             self.facing = 'up'
         if keys[K_DOWN]:
-            for sprite in self.game.all_sprites:
-                sprite.rect.y -= PLAYER_SPEED
+            if self.SCROLLDOWN:
+                for sprite in self.game.all_sprites:
+                    sprite.rect.y -= PLAYER_SPEED
             self.y_change += PLAYER_SPEED
             self.facing = 'down'
+
+##    def scroll(self):
+##        if self.rect.x >= WIN_W*0.75:
+##            self.SCROLLRIGHT = True
+##        else:
+##            self.SCROLLRIGHT = False
+##        if self.rect.x <= WIN_W*0.25:
+##            self.SCROLLLEFT = True
+##        else:
+##            self.SCROLLLEFT = False
+##        if self.rect.y >= WIN_H*0.75:
+##            self.SCROLLDOWN = True
+##        else:
+##            self.SCROLLDOWN = False
+##        if self.rect.y <= WIN_H*0.25:
+##            self.SCROLLUP = True
+##        else:
+##            self.SCROLLUP = False
 
     def collision(self,direction):
         if direction == "x":
@@ -141,10 +173,40 @@ class Player(pygame.sprite.Sprite):
                 self.ani_loop += 0.1
                 if self.ani_loop>=3:
                     self.ani_loop = 1
-        
+
+    def move_center(self):
+        self.x,self.y = 0,0
+        self.x = (640 - self.rect.x)
+        self.y = (400 - self.rect.y)
+        for sprite in self.game.all_sprites:
+            sprite.rect.x += self.x
+            sprite.rect.y += self.y   
         
 class Block(pygame.sprite.Sprite):
     ''' a ground tile bloack class for different base tiles in the gae'''
+    def __init__(self,game,spritesheet,x,y,sp_x,sp_y,collide=False):
+        self.game = game
+        self._layer = BLOCK_LAYER
+        if collide:
+            self.groups = self.game.all_sprites,self.game.blocks,self.game.collide_blocks
+        else:
+            self.groups = self.game.all_sprites,self.game.blocks
+        pygame.sprite.Sprite.__init__(self,self.groups)
+
+        self.x = x*TILESIZE
+        self.y = y*TILESIZE
+
+        self.width = TILESIZE
+        self.height = TILESIZE
+
+        self.image = spritesheet.get_sprite(sp_x,sp_y,self.width,self.height)
+        self.image.set_colorkey((255,255,255))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+class Tree(pygame.sprite.Sprite):
     def __init__(self,game,spritesheet,x,y,sp_x,sp_y,collide=False):
         self.game = game
         self._layer = BLOCK_LAYER
