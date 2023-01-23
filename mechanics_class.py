@@ -24,17 +24,13 @@ class SpriteLoader:
 
 class Renderer:
     '''render engine class that renders sprites based on list data'''
-
-    world_map = {}
     
     def __init__(self,game):
         self.game = game
 ##        self.map_val = self._smooth_noise(self.map_value_generator(1234))
 ##        self.save_map_vals(self.map_val)
-        noise_map = {}
+        self.world_map = {}
         noise_map = self.load_map_vals("base_tile_values.json")
-        self.world_map.update(noise_map)
-        self.update_map()
 
     def _converter(self,a):
         b= {}
@@ -49,18 +45,18 @@ class Renderer:
         for y,row in enumerate(n):
             for x,col in enumerate(row):
                 d[str((x,y))] = col
-        with open("base_tile_values.json","w") as file:
+        with open("base_tile_values.json","w",encoding='UTF8') as file:
             json.dump(d,file,indent=2)
 
     def load_map_vals(self,file):
 
         def jsonKeys2int(x):
             if isinstance(x, dict):
-                    return {eval(k):v for k,v in x.items()}
+                    return {k:v for k,v in x.items()}
             return x
         
         map_vals = {}
-        with open(file) as file:
+        with open(file,'r',encoding='UTF8') as file:
             map_vals = json.load(file,object_hook=jsonKeys2int)
         return map_vals
 
@@ -68,7 +64,6 @@ class Renderer:
         '''placeholder function'''
         
         self.tilemap(self.world_map)
-##        self.obj_bliting(self.world_map)
     
     def map_value_generator(self,seed):
         '''random map value generator using opensimplex module, returns a 2d list of floats'''
@@ -120,48 +115,24 @@ class Renderer:
         for x,y in n:     
             if n[x,y] >= 0.5 :           #high ground
                 Block(self.game,self.game.base_tiles,x,y,32,0)
+                #Tree(self.game,self.game.objs_spritesheet,x,y)
             elif n[x,y] >=0.1 and n[x,y] <=0.5:        #grass plains
                 Block(self.game,self.game.base_tiles,x,y,0,0)
             elif n[x,y] >= -0.1 and n[x,y] <= 0.1:      # sand
                 Block(self.game,self.game.base_tiles,x,y,0,0)
+                
             elif n[x,y] <= -0.1 and n[x,y] >= -0.3:     #water
-                Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
+##                Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
+                Block(self.game,self.game.base_tiles,x,y,0,0)
+                Tree(self.game,self.game.objs_spritesheet,x,y)
             elif n[x,y] <= -0.3:     #deep water
-                Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
+##                Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
+                Block(self.game,self.game.base_tiles,x,y,0,0)
+                Tree(self.game,self.game.objs_spritesheet,x,y)
 
 
-##    def obj_bliting(self,n):
-##        d = {}
-##        for x,y in n:     
-##            if n[x,y] >= 0.5 :           
-##                d[x,y] = 'm'
-##            elif n[x,y] >=0.1 and n[x,y] <=0.5:        
-##                d[x,y] = 'g'
-##            elif n[x,y] >= -0.1 and n[x,y] <= 0.1:      
-##                d[x,y] = 's'
-##            elif n[x,y] <= -0.1 and n[x,y] >= -0.3:     
-##                d[x,y] = 'w'
-##            elif n[x,y] <= -0.3:     
-##                d[x,y] = 'd'
-##        (a,b) = random.choice(list(n.keys()))
-##        d[a,b] = 'p'
-##        for x,y in d:
-##            if d[x,y] == 'm':           
-##                pass
-##            elif d[x,y] == 'g':        
-##                pass
-##            elif d[x,y] == 's':      
-##                pass
-##            elif d[x,y] == 'w':     
-##                pass
-##            elif d[x,y] == 'd':     
-##                pass
-##            elif d[x,y] == 'p':
-##                Player(self.game,self.game.player_spritesheet,x,y,11,9)
-##
-
-
-
+class Culling:
+    pass
 
 
 

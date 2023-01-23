@@ -16,7 +16,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self,game,spritesheet,x,y,sp_x,sp_y):
         self.game = game
         self._layer = PLAYER_LAYER
-        self.groups = self.game.all_sprites
+        self.groups = self.game.all_sprites,self.game.player_group
         pygame.sprite.Sprite.__init__(self,self.groups)
 
         self.spritesheet = spritesheet
@@ -42,16 +42,14 @@ class Player(pygame.sprite.Sprite):
         self.SCROLLUP = False
         self.SCROLLDOWN = False
         
-        
-        
     def update(self):
 ##        self.scroll()
         self.movement()
         self.animate()
 
-        self.rect.x += self.x_change
+        self.rect.x += self.x_change*self.game.dt
         self.collision("x")
-        self.rect.y += self.y_change
+        self.rect.y += self.y_change*self.game.dt
         self.collision("y")
 
         self.x_change = 0
@@ -143,7 +141,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = down_ani[0]
             else:
                 self.image = down_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1
+                self.ani_loop += 0.1*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
 
@@ -152,7 +150,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = up_ani[0]
             else:
                 self.image = up_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1
+                self.ani_loop += 0.1*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
 
@@ -161,7 +159,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = left_ani[0]
             else:
                 self.image = left_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1
+                self.ani_loop += 0.1*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
                     
@@ -170,7 +168,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = right_ani[0]
             else:
                 self.image = right_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1
+                self.ani_loop += 0.1*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
 
@@ -200,34 +198,38 @@ class Block(pygame.sprite.Sprite):
         self.height = TILESIZE
 
         self.image = spritesheet.get_sprite(sp_x,sp_y,self.width,self.height)
-        self.image.set_colorkey((255,255,255))
 
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
 
+    def appear(self):
+        pass
+
 class Tree(pygame.sprite.Sprite):
-    def __init__(self,game,spritesheet,x,y,sp_x,sp_y,collide=False):
+    def __init__(self,game,spritesheet,x,y,collide=True):
+        data = [(11,6),(65,4),(112,7)]
+        sp_x,sp_y = random.choice(data)
+        
         self.game = game
-        self._layer = BLOCK_LAYER
+        self._layer = TREE_LAYER
+
+        self.x = x*TILESIZE
+        self.y = y*TILESIZE
+
+        self.width = TILESIZE
+        self.height = TILESIZE*2
+
+        self.image = spritesheet.get_sprite(sp_x,sp_y,self.width,self.height)
+        self.rect = pygame.Rect(self.x,self.y-32,self.width,self.height)
+        
         if collide:
             self.groups = self.game.all_sprites,self.game.blocks,self.game.collide_blocks
         else:
             self.groups = self.game.all_sprites,self.game.blocks
         pygame.sprite.Sprite.__init__(self,self.groups)
 
-        self.x = x*TILESIZE
-        self.y = y*TILESIZE
 
-        self.width = TILESIZE
-        self.height = TILESIZE
-
-        self.image = spritesheet.get_sprite(sp_x,sp_y,self.width,self.height)
-        self.image.set_colorkey((255,255,255))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
 
 
 
