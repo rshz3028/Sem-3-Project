@@ -11,7 +11,7 @@ from obj_class import *
 from config import *
 
 class SpriteLoader:
-    ''' class to load a sprite sheet once '''
+    ''' class to load a spritesheet into memory '''
     def __init__(self,file):
         self.sheet = pygame.image.load(file).convert()
 
@@ -24,13 +24,14 @@ class SpriteLoader:
 
 class Renderer:
     '''render engine class that renders sprites based on list data'''
-    
     def __init__(self,game):
         self.game = game
 ##        self.map_val = self._smooth_noise(self.map_value_generator(1234))
 ##        self.save_map_vals(self.map_val)
         self.world_map = {}
         noise_map = self.load_map_vals("base_tile_values.json")
+        self.world_map.update(noise_map)
+        self.update_map()
 
     def _converter(self,a):
         b= {}
@@ -52,7 +53,7 @@ class Renderer:
 
         def jsonKeys2int(x):
             if isinstance(x, dict):
-                    return {k:v for k,v in x.items()}
+                    return {eval(k):v for k,v in x.items()}
             return x
         
         map_vals = {}
@@ -112,27 +113,43 @@ class Renderer:
         return l
     
     def tilemap(self,n):
-        for x,y in n:     
+        for i in n:
+            x,y = i
+            a,b = random.choice([(0,0),(32,0)]) #ground tiles
+            c,d = random.choice([(66,0),(101,0)]) #foilage
+            e,f = random.choice([(0,64),(32,64)])
+    
             if n[x,y] >= 0.5 :           #high ground
-                Block(self.game,self.game.base_tiles,x,y,32,0)
-                #Tree(self.game,self.game.objs_spritesheet,x,y)
+                Block(self.game,self.game.base_tiles,x,y,a,b)
+                if random.randint(1,5)==2:
+                    if random.randint(1,10) == 1:
+                        Block(self.game,self.game.base_tiles,x,y,e,f)
+                    else:
+                        Block(self.game,self.game.base_tiles,x,y,c,d)
+                    
             elif n[x,y] >=0.1 and n[x,y] <=0.5:        #grass plains
-                Block(self.game,self.game.base_tiles,x,y,0,0)
+                Block(self.game,self.game.base_tiles,x,y,a,b)
+                if random.randint(1,5)==2:
+                    if random.randint(1,10) == 1:
+                        Block(self.game,self.game.base_tiles,x,y,e,f)
+                    else:
+                        Block(self.game,self.game.base_tiles,x,y,c,d)
+                    
             elif n[x,y] >= -0.1 and n[x,y] <= 0.1:      # sand
-                Block(self.game,self.game.base_tiles,x,y,0,0)
+                Block(self.game,self.game.base_tiles,x,y,a,b)
+                if random.randint(1,6) == 2:
+                    Block(self.game,self.game.base_tiles,x,y,67,66,collide=True)
+                    
+            elif n[x,y] <= -0.1 and n[x,y] >= -0.3:     #trees
+                Block(self.game,self.game.base_tiles,x,y,a,b)
+                Block(self.game,self.game.base_tiles,x,y,c,d)
+                Tree(self.game,self.game.objs_spritesheet,x,y)
                 
-            elif n[x,y] <= -0.1 and n[x,y] >= -0.3:     #water
-##                Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
-                Block(self.game,self.game.base_tiles,x,y,0,0)
-                Tree(self.game,self.game.objs_spritesheet,x,y)
-            elif n[x,y] <= -0.3:     #deep water
-##                Block(self.game,self.game.base_tiles,x,y,64,0,collide=True)
-                Block(self.game,self.game.base_tiles,x,y,0,0)
+            elif n[x,y] <= -0.3:     #trees
+                Block(self.game,self.game.base_tiles,x,y,a,b)
+                Block(self.game,self.game.base_tiles,x,y,c,d)
                 Tree(self.game,self.game.objs_spritesheet,x,y)
 
-
-class Culling:
-    pass
 
 
 

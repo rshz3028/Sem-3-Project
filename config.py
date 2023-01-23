@@ -1,11 +1,11 @@
 WIN_W = 1280 # window width
 WIN_H = 800  # window height
-FPS = 60    # frame rate
+FPS = 120    # frame rate
 TILESIZE = 32  # smallest pixel unit
 CHUNKSIZE = 8
 
 
-PLAYER_SPEED = 2  # player movement speed(7 pixels per frame)
+PLAYER_SPEED = 9  # player movement speed(7 pixels per frame)
 PLAYER_LAYER = 3  # Layeredsurface class attribute
 BLOCK_LAYER = 1   # Layeredsurface class attribute
 TREE_LAYER = 2

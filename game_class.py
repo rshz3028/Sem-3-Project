@@ -22,45 +22,32 @@ class Game:
 
         self.last_time = time.time() 
         self.dt = time.time()-self.last_time
-
-    @profile
+        
     def new(self):
         #new game
         self.playing = True
 
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.active_sprites = pygame.sprite.LayeredUpdates()
-        self.player_group = pygame.sprite.LayeredUpdates()
+        self.inactive_sprites = pygame.sprite.LayeredUpdates()
         self.blocks = pygame.sprite.LayeredUpdates()
         self.collide_blocks = pygame.sprite.LayeredUpdates()
 
         self.player = Player(self,self.player_spritesheet,200,125,11,9)
         self.renderer = Renderer(self)
-
-##        self.all_sprites.update()
  
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
                 self.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
 
     def update(self):
-        #self.player_group.update()
+        self.active_sprites.update()
         
         self.dt = time.time() - self.last_time
         self.dt*=60
         self.last_time = time.time()
-
-        self.screen_rect.center = self.player.rect.center
-
-##        for i in self.all_sprites:
-##            if self.screen_rect.contains(i):
-        print(self.clock.tick())
         
     def draw(self):
         self.screen.fill(BLACK)
@@ -82,14 +69,17 @@ class Game:
         pass
 
 
- 
-g = Game()
-g.intro_screen()
-g.new()
-while g.running:
-    g.main()
-    g.game_over()
-pygame.quit()
-sys.exit()
+def main(): 
+    g = Game()
+    g.intro_screen()
+    g.new()
+    while g.running:
+        g.main()
+        g.game_over()
+    pygame.quit()
+    sys.exit()
 
+if __name__ == '__main__':
+    main()
+    profile(Game.Update())
 
