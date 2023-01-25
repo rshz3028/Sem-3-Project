@@ -31,9 +31,9 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
         self.facing = 'down'
-        self.ani_loop = 1
+        self.ani_loop = 0
 
-        self.image = self.spritesheet.get_sprite(sp_x,sp_y,13,19)
+        self.image = self.spritesheet.get_sprite(sp_x,sp_y,32,32)
         
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -43,14 +43,31 @@ class Player(pygame.sprite.Sprite):
         self.SCROLLRIGHT = False
         self.SCROLLUP = False
         self.SCROLLDOWN = False
+
+        self.up_ani = [self.spritesheet.get_sprite(10,206,24,32),
+                  self.spritesheet.get_sprite(58,204,24,32),
+                  self.spritesheet.get_sprite(106,206,24,32),
+                  self.spritesheet.get_sprite(154,204,24,32),]
+        self.down_ani = [self.spritesheet.get_sprite(10,12,24,32),
+                  self.spritesheet.get_sprite(58,10,24,32),
+                  self.spritesheet.get_sprite(106,12,24,32),
+                  self.spritesheet.get_sprite(154,10,24,32)]
+        self.left_ani = [self.spritesheet.get_sprite(12,78,24,32),
+                  self.spritesheet.get_sprite(60,76,24,32),
+                  self.spritesheet.get_sprite(108,78,24,32),
+                  self.spritesheet.get_sprite(156,76,24,32)]
+        self.right_ani = [self.spritesheet.get_sprite(12,206,24,32),
+                  self.spritesheet.get_sprite(60,140,24,32),
+                  self.spritesheet.get_sprite(108,206,24,32),
+                  self.spritesheet.get_sprite(156,140,24,32)]
         
     def update(self):
         self.movement()
         self.animate()
 
-        self.rect.x += self.x_change#*self.game.dt
+        self.rect.x += self.x_change
         self.collision("x")
-        self.rect.y += self.y_change#*self.game.dt
+        self.rect.y += self.y_change
         self.collision("y")
 
         self.x_change = 0
@@ -90,56 +107,40 @@ class Player(pygame.sprite.Sprite):
                     self.rect.y = hits[0].rect.bottom
                     
     def animate(self):
-        up_ani = [self.spritesheet.get_sprite(10,39,10,17),
-                  self.spritesheet.get_sprite(34,39,10,17),
-                  self.spritesheet.get_sprite(59,39,10,17),
-                  self.spritesheet.get_sprite(82,39,10,17)]
-        down_ani = [self.spritesheet.get_sprite(11,9,10,17),
-                  self.spritesheet.get_sprite(35,9,10,17),
-                  self.spritesheet.get_sprite(59,9,10,17),
-                  self.spritesheet.get_sprite(82,9,10,17)]
-        left_ani = [self.spritesheet.get_sprite(11,69,8,17),
-                  self.spritesheet.get_sprite(34,69,8,17),
-                  self.spritesheet.get_sprite(59,70,8,17),
-                  self.spritesheet.get_sprite(84,70,8,17)]
-        right_ani = [self.spritesheet.get_sprite(11,97,8,17),
-                  self.spritesheet.get_sprite(33,97,8,17),
-                  self.spritesheet.get_sprite(58,98,8,17),
-                  self.spritesheet.get_sprite(83,98,8,17)]
 
         if self.facing == 'down':
             if self.y_change == 0:
-                self.image = down_ani[0]
+                self.image = self.down_ani[0]
             else:
-                self.image = down_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1*self.game.dt
+                self.image = self.down_ani[math.floor(self.ani_loop)]
+                self.ani_loop += 0.1#*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
 
         if self.facing == 'up':
             if self.y_change == 0:
-                self.image = up_ani[0]
+                self.image = self.up_ani[0]
             else:
-                self.image = up_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1*self.game.dt
+                self.image = self.up_ani[math.floor(self.ani_loop)]
+                self.ani_loop += 0.1#*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
 
         if self.facing == 'left':
             if self.x_change == 0:
-                self.image = left_ani[0]
+                self.image = self.left_ani[0]
             else:
-                self.image = left_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1*self.game.dt
+                self.image = self.left_ani[math.floor(self.ani_loop)]
+                self.ani_loop += 0.1#*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
                     
         if self.facing == 'right':
             if self.x_change == 0:
-                self.image = right_ani[0]
+                self.image = self.left_ani[0]
             else:
-                self.image = right_ani[math.floor(self.ani_loop)]
-                self.ani_loop += 0.1*self.game.dt
+                self.image = self.right_ani[math.floor(self.ani_loop)]
+                self.ani_loop += 0.1#*self.game.dt
                 if self.ani_loop>=3:
                     self.ani_loop = 1
 

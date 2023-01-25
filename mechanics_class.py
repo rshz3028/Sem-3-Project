@@ -12,45 +12,56 @@ from config import *
 
 class SpriteLoader:
     ''' class to load a spritesheet into memory '''
-    def __init__(self,file):
+    def __init__(self,file,color=(255,255,255),alpha=False):
+        if alpha:
+            self.sheet = pygame.image.load(file).convert_alpha()
         self.sheet = pygame.image.load(file).convert()
+        self.color = color
 
     def get_sprite(self,x,y,width,height):
         '''Function that gets a specific sprite from the loaded spritesheet'''
         sprite = pygame.Surface([width,height])
-        sprite.set_colorkey((255,255,255))
+        sprite.set_colorkey(self.color)
         sprite.blit(self.sheet,(0,0),(x,y,width,height))
         return sprite
 
 class Renderer:
     '''render engine class that renders sprites based on list data'''
-    def __init__(self,game):
+    world_map = {}
+    def __init__(self,game,new = True):
         self.game = game
-##        self.map_val = self._smooth_noise(self.map_value_generator(1234))
-##        self.save_map_vals(self.map_val)
-        self.world_map = {}
-        noise_map = self.load_map_vals("base_tile_values.json")
-        self.world_map.update(noise_map)
-        self.update_map()
+        if new:
+            self.new_game()
+        else:
+            self.load_game()
 
-    def _converter(self,a):
-        b= {}
-        if type(a) == list:
-            for y,row in enumerate(a):
-                for x,col in enumerate(row):
-                    b[x,y] = col
-        return b
+##    def loading(self,n):
+##        task = threading.Thread(target=n)
+##        task.start()
+##        Load
+##        while True:
+##            if task.is_alive():
+##                Loading()
+##            else:
+##                break
+        
 
-    def save_map_vals(self,n):
-        d = {}
-        for y,row in enumerate(n):
-            for x,col in enumerate(row):
-                d[str((x,y))] = col
-        with open("base_tile_values.json","w",encoding='UTF8') as file:
-            json.dump(d,file,indent=2)
+    def new_game(self):
+        loading_screen = Loading()
+        map_val =_smooth_noise(map_value_generator(1234))
+        save_map_vals(map_val)
+        Renderer.world_map = self.load_map_vals("base_tile_values.json")
+        self.tilemap(Renderer.world_map)
+        loading_screen.terminate()
 
+    def load_game(self):
+        loading_screen = Loading()
+        Renderer.world_map = self.load_map_vals("base_tile_values.json")
+        self.tilemap(Renderer.world_map)
+        loading_screen.terminate()
+    
     def load_map_vals(self,file):
-
+        
         def jsonKeys2int(x):
             if isinstance(x, dict):
                     return {eval(k):v for k,v in x.items()}
@@ -60,15 +71,17 @@ class Renderer:
         with open(file,'r',encoding='UTF8') as file:
             map_vals = json.load(file,object_hook=jsonKeys2int)
         return map_vals
-
-    def update_map(self):
-        '''placeholder function'''
-        
-        self.tilemap(self.world_map)
     
-    def map_value_generator(self,seed):
+    def save_map_vals(n):
+        d = {}
+        for y,row in enumerate(n):
+            for x,col in enumerate(row):
+                d[str((x,y))] = col
+        with open("base_tile_values.json","w") as file:
+            json.dump(d,file,indent=2)
+
+    def map_value_generator(seed):
         '''random map value generator using opensimplex module, returns a 2d list of floats'''
-##        r = random.randint(0,1280)
         r = seed
         print(f"seed: {r}")
         sp.seed(r)
@@ -80,7 +93,7 @@ class Renderer:
             n.append(o)
         return n
 
-    def _smooth_noise(self,l):
+    def _smooth_noise(l):
         '''function used to smooth out noise values of a list l by checking
             with the values of the tiles around it. If a type of tile is in greater count make the current tile into that tile.
             This function returns a list of float values'''
@@ -150,12 +163,58 @@ class Renderer:
                 Block(self.game,self.game.base_tiles,x,y,c,d)
                 Tree(self.game,self.game.objs_spritesheet,x,y)
 
+import threading
+class Loading:
 
+    def __init__(self):
+        self.screen = pygame.display.set_mode((WIN_W, WIN_H),pygame.FULLSCREEN)
+        self.font = pygame.font.SysFont(FONT,FONT_SIZE)
 
+        self.font = pygame.font.SysFont(FONT, 100)
+        self.clock = pygame.time.Clock()
 
+        self.chara = SpriteLoader("assets/attack.png")
+        self.ani_cycle = [
+                     self.chara.get_sprite(11,0,68,86),
+                     self.chara.get_sprite(79,0,68,86),
+                     self.chara.get_sprite(151,0,68,86),
+                     self.chara.get_sprite(220,0,68,86),
+                     self.chara.get_sprite(297,0,68,86),
+                     self.chara.get_sprite(373,0,68,86),
+                     ]
+        self.ani_var = 0
+        self.running = True
 
+        self.main()
 
+    def draw_text(self,text,font,color,surface,x,y):
+        text_obj = self.font.render(text,True,color)
+        text_rect = text_obj.get_rect()
+        text_rect.center = (x,y)
+        surface.blit(text_obj,text_rect)
 
+    def animation(self):
+        image = self.ani_cycle[round(self.ani_var)]
+        rect = image.get_rect(center = (640,400))
+        self.screen.blit(image,rect)
+        self.ani_var +=0.1
+        if self.ani_var>5: self.ani_var = 0
+
+    def terminate(self):
+        self.running = False
+
+    def main(self):
+
+        while self.running:
+            
+            self.screen.fill((13,14,46))
+
+            self.animation()
+            self.draw_text("Loading",FONT,WHITE,self.screen,640,300)
+            
+            pygame.display.update()
+            self.clock.tick(FPS)
+        
 
 
 

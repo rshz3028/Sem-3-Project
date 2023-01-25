@@ -1,9 +1,16 @@
+import pygame
+
 WIN_W = 1280 # window width
 WIN_H = 800  # window height
-FPS = 120    # frame rate
+FLAGS =pygame.FULLSCREEN|pygame.RESIZABLE|pygame.HWSURFACE|pygame.DOUBLEBUF
+FPS = 60    # frame rate
 TILESIZE = 32  # smallest pixel unit
 CHUNKSIZE = 8
 
+MENU_W = 600
+MENU_H = 600
+FONT = "Ariel"
+FONT_SIZE = 26
 
 PLAYER_SPEED = 9  # player movement speed(7 pixels per frame)
 PLAYER_LAYER = 3  # Layeredsurface class attribute
